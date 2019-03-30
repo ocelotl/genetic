@@ -38,8 +38,6 @@ class Characters(object):
 
         if randint(0, 99) == 50:
 
-            print('Mutated!')
-
             self.characters[randint(0, len(self.characters) - 1)] = choice(
                 ascii_uppercase
             )
@@ -68,48 +66,55 @@ def reproduce(first_characters, second_characters):
     return Characters(child_characters)
 
 
-population = [Characters() for index in range(1000)]
-
 expected_characters = 'ABCDEFGHIJKLMNOPQR'
 
-population_counter = 1
+population_size = 1000
 
-while True:
+while population_size > 0:
 
-    for characters in population:
+    population = [Characters() for index in range(population_size)]
 
-        print(characters)
+    population_counter = 1
 
-    print()
-    print(population_counter)
-    print()
+    while True:
 
-    population_counter = population_counter + 1
+        population_counter = population_counter + 1
 
-    probabilities = [
-        characters.calculate_fitness(expected_characters)
-        for characters in population
-    ]
+        try:
 
-    probability_sum = sum(probabilities)
+            probabilities = [
+                characters.calculate_fitness(expected_characters)
+                for characters in population
+            ]
 
-    set_trace
+        except Exception:
 
-    probabilities = [
-        probability / probability_sum for probability in probabilities
-    ]
+            print('population_size: {}'.format(population_size))
+            print('population_counter: {}'.format(population_counter))
 
-    new_population = []
+            break
 
-    for characters in population:
+        probability_sum = sum(probabilities)
 
-        child = reproduce(
-            weighted_choice(population, p=probabilities),
-            weighted_choice(population, p=probabilities)
-        )
+        set_trace
 
-        child.mutate()
+        probabilities = [
+            probability / probability_sum for probability in probabilities
+        ]
 
-        new_population.append(child)
+        new_population = []
 
-    population = new_population
+        for characters in population:
+
+            child = reproduce(
+                weighted_choice(population, p=probabilities),
+                weighted_choice(population, p=probabilities)
+            )
+
+            child.mutate()
+
+            new_population.append(child)
+
+        population = new_population
+
+    population_size = population_size - 50
